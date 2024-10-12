@@ -26,7 +26,7 @@ public class BubbleSortPanel extends SortPanel {
                     swapped = true;
                 }
                 repaint();
-                Thread.sleep(sleepTime);
+                Thread.sleep((int) (sleepTime * 0.5));
             }
             if (!swapped) {
                 break;

@@ -1,87 +1,64 @@
-
 import javax.swing.*;
 import java.awt.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class Main {
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Algorithm Visualizer");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
-        frame.setLayout(new BorderLayout());
+public class Main extends JFrame {
+    private JPanel mainMenu;
 
-        JPanel controlPanel = new JPanel();
-        controlPanel.setLayout(new FlowLayout());
+    public Main() {
+        setTitle("Algorithm Visualizer");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new CardLayout());
 
-        JButton startBubbleSortButton = new JButton("Bubble Sort");
-        JButton startQuickSortButton = new JButton("Quick Sort");
-        JButton startInsertionSortButton = new JButton("Insertion Sort");
-        JButton startMergeSortButton = new JButton("Merge Sort");
-        JButton startRadixSortButton = new JButton("Radix Sort");
-        JButton startSelectionSortButton = new JButton("Selection Sort");
+        // Create the main menu panel
+        mainMenu = new JPanel(new GridLayout(6, 1));
+        mainMenu.add(createButton("Bubble Sort", new BubbleSortPanel("Bubble Sort", 20, 800, 600)));
+        mainMenu.add(createButton("Insertion Sort", new InsertionSortPanel("Insertion Sort", 20, 800, 600)));
+        mainMenu.add(createButton("Merge Sort", new MergeSortPanel("Merge Sort", 20, 800, 600)));
+        mainMenu.add(createButton("Quick Sort", new QuickSortPanel("Quick Sort", 20, 800, 600)));
+        mainMenu.add(createButton("Radix Sort", new RadixSortPanel("Radix Sort", 20, 800, 600)));
+        mainMenu.add(createButton("Selection Sort", new SelectionSortPanel("Selection Sort", 20, 800, 600)));
 
-        SortPanel bubbleSortPanel = new BubbleSortPanel(50, 600, 400);
-        SortPanel quickSortPanel = new QuickSortPanel(50, 600, 400);
-        SortPanel insertionSortPanel = new InsertionSortPanel(50, 600, 400);
-        SortPanel mergeSortPanel = new MergeSortPanel(50, 600, 400);
-        SortPanel radixSortPanel = new RadixSortPanel(50, 600, 400);
-        SortPanel selectionSortPanel = new SelectionSortPanel(50, 600, 400);
+        add(mainMenu);
 
-        startBubbleSortButton.addActionListener(e -> startSorting(frame, bubbleSortPanel));
-        startQuickSortButton.addActionListener(e -> startSorting(frame, quickSortPanel));
-        startInsertionSortButton.addActionListener(e -> startSorting(frame, insertionSortPanel));
-        startMergeSortButton.addActionListener(e -> startSorting(frame, mergeSortPanel));
-        startRadixSortButton.addActionListener(e -> startSorting(frame, radixSortPanel));
-        startSelectionSortButton.addActionListener(e -> startSorting(frame, selectionSortPanel));
-
-        controlPanel.add(startBubbleSortButton);
-        controlPanel.add(startQuickSortButton);
-        controlPanel.add(startInsertionSortButton);
-        controlPanel.add(startMergeSortButton);
-        controlPanel.add(startRadixSortButton);
-        controlPanel.add(startSelectionSortButton);
-
-        frame.add(controlPanel, BorderLayout.NORTH);
-        frame.add(bubbleSortPanel, BorderLayout.CENTER);  // Start with bubble sort panel
-
-        frame.setVisible(true);
-
-
-
+        setVisible(true);
     }
 
-    // Utility method to start the selected sorting algorithm
-    private static void startSorting(JFrame frame, SortPanel sortPanel) {
-        frame.getContentPane().removeAll();  // Remove previous panel
-        frame.add(sortPanel, BorderLayout.CENTER);
-        frame.revalidate();
-        frame.repaint();
+    private JButton createButton(String name, SortPanel panel) {
+        JButton button = new JButton(name);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                remove(mainMenu);
+                panel.add(createBackButton(panel));
+                add(panel);
+                panel.startSorting(); // Starts the sorting process
+                revalidate();
+                repaint();
+            }
+        });
+        return button;
+    }
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(sortPanel);
+    private JButton createBackButton(SortPanel panel) {
+        JButton backButton = new JButton("Back to Main Menu");
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                remove(panel);
+                remove(backButton); // edited
+                add(mainMenu);
+                revalidate();
+                repaint();
+            }
+        });
+        return backButton;
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(Main::new);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
